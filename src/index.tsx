@@ -30,7 +30,7 @@ import {
   validateDataKeys,
   validateMetadataKeys,
 } from "./utils/errorHandling";
-import { Tooltip as TT, Legend } from "./components";
+import { Tooltip as TT, Legend, RegionLabel } from "./components";
 
 import "./index.css";
 import "react-tooltip/dist/react-tooltip.css";
@@ -89,6 +89,7 @@ function TopoHeatmap({
     let newProjection = geoMercator();
     if (fitSize)
       newProjection = newProjection.fitSize([width, height], geojson);
+
     newProjection = newProjection.scale(newProjection.scale() * scale);
     newProjection = newProjection.center([
       newProjection.center()[0] + translate[0],
@@ -103,6 +104,9 @@ function TopoHeatmap({
 
   const tooltipProps = TT.getTooltipProps(getChildByType(children, TT));
   const legendProps = Legend.getLegendProps(getChildByType(children, Legend));
+  const regionLabelProps = RegionLabel.getRegionLabelProps(
+    getChildByType(children, RegionLabel)
+  );
 
   const getTooltipContent = (geoId: string | number): React.ReactNode => {
     if (tooltipProps && metadata && tooltipProps.tooltipContent) {
@@ -129,6 +133,30 @@ function TopoHeatmap({
           >
             {geoId}
           </h3>
+        </div>
+      );
+    }
+  };
+
+  const getRegionLabelContent = (geoId: string | number): React.ReactNode => {
+    if (regionLabelProps && metadata && regionLabelProps?.regionLabelContent) {
+      return (
+        <div
+          className={`react-topojson-heatmap__region-label ${
+            regionLabelProps.position || "top"
+          }`}
+        >
+          {regionLabelProps.regionLabelContent(metadata[geoId])}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          className={`react-topojson-heatmap__region-label ${
+            regionLabelProps?.position || "top"
+          }`}
+        >
+          {geoId}
         </div>
       );
     }
@@ -182,6 +210,10 @@ function TopoHeatmap({
                   data-tooltip-html={ReactDOMServer.renderToStaticMarkup(
                     getTooltipContent(getProperty(geo, idPath))
                   )}
+                  data-region-label-id={`region-label-${componentId}`}
+                  data-region-label-html={ReactDOMServer.renderToStaticMarkup(
+                    getRegionLabelContent(getProperty(geo, idPath))
+                  )}
                   onClick={() => {
                     if (onClick) onClick(geo);
                     handleSelectGeo(geo);
@@ -204,6 +236,12 @@ function TopoHeatmap({
           backgroundColor: "transparent",
         }}
       />
+      {regionLabelProps && (
+        <RegionLabel
+          position={regionLabelProps.position}
+          regionLabelContent={regionLabelProps.regionLabelContent}
+        />
+      )}
     </div>
   );
 }
