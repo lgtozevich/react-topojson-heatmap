@@ -4,7 +4,8 @@ import type { MetaItem } from "src/types";
 import "./RegionLabel.css";
 
 export type RegionLabelProps = {
-  position?: "top" | "right" | "bottom" | "left" | "center";
+  width?: number;
+  height?: number;
   regionLabelContent?: (meta: MetaItem) => React.ReactNode;
 };
 

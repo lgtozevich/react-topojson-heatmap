@@ -63,7 +63,9 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "typescript": "^5.5.4",
     "vite": "^5.3.5",
-    "vite-plugin-libcss": "^1.1.1"
+    "vite-plugin-libcss": "^1.1.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "peerDependencies": {
     "react": "^18.0.0",

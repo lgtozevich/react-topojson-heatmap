@@ -8,7 +8,7 @@ import {
   ProjectionFunction,
 } from "react-simple-maps";
 import { Tooltip } from "react-tooltip";
-import { geoMercator } from "d3";
+import { geoMercator, geoCentroid, GeoGeometryObjects } from "d3";
 import { scaleLinear } from "d3-scale";
 import { feature } from "topojson-client";
 
@@ -30,6 +30,8 @@ import {
   validateDataKeys,
   validateMetadataKeys,
 } from "./utils/errorHandling";
+import { centerRect } from "./utils/mathUtils";
+
 import { Tooltip as TT, Legend, RegionLabel } from "./components";
 
 import "./index.css";
@@ -141,23 +143,13 @@ function TopoHeatmap({
   const getRegionLabelContent = (geoId: string | number): React.ReactNode => {
     if (regionLabelProps && metadata && regionLabelProps?.regionLabelContent) {
       return (
-        <div
-          className={`react-topojson-heatmap__region-label ${
-            regionLabelProps.position || "top"
-          }`}
-        >
+        <div className={`react-topojson-heatmap__region-label`}>
           {regionLabelProps.regionLabelContent(metadata[geoId])}
         </div>
       );
     } else {
       return (
-        <div
-          className={`react-topojson-heatmap__region-label ${
-            regionLabelProps?.position || "top"
-          }`}
-        >
-          {geoId}
-        </div>
+        <div className={`react-topojson-heatmap__region-label`}>{geoId}</div>
       );
     }
   };
@@ -194,34 +186,62 @@ function TopoHeatmap({
         projection={projection as unknown as ProjectionFunction}
       >
         <Geographies geography={topojson} style={{ flexGrow: 1 }}>
-          {({ geographies }: { geographies: GeographyType[] }) =>
-            geographies.map((geo) => {
-              const stateValue = data[getProperty(geo, idPath)] || 0;
-              return (
-                <Geography
-                  className={`react-topojson-heatmap__state ${
-                    selectedGeos.includes(geo) ? "selected" : ""
-                  }`}
-                  key={`${componentId}_${getProperty(geo, idPath)}`}
-                  geography={geo}
-                  fill={colorScale(stateValue)}
-                  id={`geo-${componentId}-${getProperty(geo, idPath)}`}
-                  data-tooltip-id={`tooltip-${componentId}`}
-                  data-tooltip-html={ReactDOMServer.renderToStaticMarkup(
-                    getTooltipContent(getProperty(geo, idPath))
-                  )}
-                  data-region-label-id={`region-label-${componentId}`}
-                  data-region-label-html={ReactDOMServer.renderToStaticMarkup(
-                    getRegionLabelContent(getProperty(geo, idPath))
-                  )}
-                  onClick={() => {
-                    if (onClick) onClick(geo);
-                    handleSelectGeo(geo);
-                  }}
-                />
-              );
-            })
-          }
+          {({ geographies }: { geographies: GeographyType[] }) => (
+            <>
+              {/**
+               * Handle region printing
+               */}
+              {geographies.map((geo) => {
+                const stateValue = data[getProperty(geo, idPath)] || 0;
+                return (
+                  <Geography
+                    key={`${componentId}_${getProperty(geo, idPath)}`}
+                    className={`react-topojson-heatmap__state ${
+                      selectedGeos.includes(geo) ? "selected" : ""
+                    }`}
+                    geography={geo}
+                    fill={colorScale(stateValue)}
+                    id={`geo-${componentId}-${getProperty(geo, idPath)}`}
+                    data-tooltip-id={`tooltip-${componentId}`}
+                    data-tooltip-html={ReactDOMServer.renderToStaticMarkup(
+                      getTooltipContent(getProperty(geo, idPath))
+                    )}
+                    data-region-label-id={`region-label-${componentId}`}
+                    data-region-label-html={ReactDOMServer.renderToStaticMarkup(
+                      getRegionLabelContent(getProperty(geo, idPath))
+                    )}
+                    onClick={() => {
+                      if (onClick) onClick(geo);
+                      handleSelectGeo(geo);
+                    }}
+                  />
+                );
+              })}
+              {/**
+               * Handle region labels printing
+               */}
+              {geographies.map((geo) => {
+                const width = regionLabelProps?.width ?? 75;
+                const height = regionLabelProps?.height ?? 50;
+                const [x, y] = centerRect(
+                  projection(geoCentroid(geo as GeoGeometryObjects)) || [0, 0],
+                  width,
+                  height
+                );
+                return (
+                  <foreignObject
+                    key={`${componentId}_label_${getProperty(geo, idPath)}`}
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                  >
+                    {getRegionLabelContent(getProperty(geo, idPath))}
+                  </foreignObject>
+                );
+              })}
+            </>
+          )}
         </Geographies>
       </ComposableMap>
       <Tooltip
@@ -236,16 +256,10 @@ function TopoHeatmap({
           backgroundColor: "transparent",
         }}
       />
-      {regionLabelProps && (
-        <RegionLabel
-          position={regionLabelProps.position}
-          regionLabelContent={regionLabelProps.regionLabelContent}
-        />
-      )}
     </div>
   );
 }
 
 export default TopoHeatmap;
 export type { GeographyType, Metadata, MetaItem, Topology };
-export { Legend, Tooltip } from "./components";
+export { Legend, Tooltip, RegionLabel } from "./components";
