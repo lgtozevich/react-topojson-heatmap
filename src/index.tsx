@@ -220,26 +220,29 @@ function TopoHeatmap({
               {/**
                * Handle region labels printing
                */}
-              {geographies.map((geo) => {
-                const width = regionLabelProps?.width ?? 75;
-                const height = regionLabelProps?.height ?? 50;
-                const [x, y] = centerRect(
-                  projection(geoCentroid(geo as GeoGeometryObjects)) || [0, 0],
-                  width,
-                  height
-                );
-                return (
-                  <foreignObject
-                    key={`${componentId}_label_${getProperty(geo, idPath)}`}
-                    x={x}
-                    y={y}
-                    width={width}
-                    height={height}
-                  >
-                    {getRegionLabelContent(getProperty(geo, idPath))}
-                  </foreignObject>
-                );
-              })}
+              {regionLabelProps &&
+                geographies.map((geo) => {
+                  const width = regionLabelProps?.width ?? 75;
+                  const height = regionLabelProps?.height ?? 50;
+                  const [x, y] = centerRect(
+                    projection(geoCentroid(geo as GeoGeometryObjects)) || [
+                      0, 0,
+                    ],
+                    width,
+                    height
+                  );
+                  return (
+                    <foreignObject
+                      key={`${componentId}_label_${getProperty(geo, idPath)}`}
+                      x={x}
+                      y={y}
+                      width={width}
+                      height={height}
+                    >
+                      {getRegionLabelContent(getProperty(geo, idPath))}
+                    </foreignObject>
+                  );
+                })}
             </>
           )}
         </Geographies>
