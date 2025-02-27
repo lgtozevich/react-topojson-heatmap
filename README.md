@@ -131,7 +131,7 @@ Used to display a tooltip with relevant information about each state.
 | trigger?       | `"hover", "click"`                    | Determines how the tooltip is triggered ( on hover or click).                                                | `"hover"`                        |
 | float?          | `boolean`                             | If true, tooltip will follow the mouse position when it moves inside the anchor element.                     | `false`                          |
 | position?       | `"top", "right", "bottom", "left"`    | Specifies the position of the tooltip relative to the target.                                                | `"top"`                           |
-| tooltipContent? | `(meta: MetaItem) => React.ReactNode` | A function that returns the content of the tooltip based on metadata. Used to customize the tooltip content. | Returns a div with the state id. |
+| tooltipContent? | `(meta: MetaItem) => React.ReactNode` | A function that returns the content of the tooltip based on metadata. Used to customize the tooltip content. | Returns a div with the region id. |
 
 
 Example Usage (using bootstrap):
@@ -207,6 +207,49 @@ function App() {
 export default App;
 ```
 
+#### RegionLabel
+
+Used to display a label inside a region, allowing customization of the content.
+
+| Prop                | Type                                  | Description                                                         | Default |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------- | ------- |
+| width?              | `number`                              | Defines the width of the label container.                                     | 75     |
+| height?             | `number`                              | Defines the height of the label container.                                    | 50     |
+| regionLabelContent? | `(meta: MetaItem) => React.ReactNode` | A function that returns the content of the label based on metadata. Used to customize the label content. | Returns a div with the region id. |
+
+Example Usage:
+```javascript
+import React from 'react';
+import TopoHeatmap, { RegionLabel, MetaItem } from 'react-topojson-heatmap';
+
+function App() {
+  const labelContent = (meta: MetaItem): React.ReactNode => {
+    return (
+       <div className="d-flex container-fluid flex-column">
+        <h3 className="fw-bold text-center text-white">{meta.name}</h3>
+          <span>
+            <strong>Population: </strong>
+            {meta.population}
+          </span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="App">
+      <TopoHeatmap data={data} metadata={metadata} topojson={topojson}>
+        <RegionLabel
+          width={50}
+          height={20}
+          regionLabelContent={labelContent}
+        />
+      </TopoHeatmap>
+    </div>
+  );
+}
+
+export default App;
+```
 
 ## Customizing
 Each component can be customized by overriding specific CSS classes.  
@@ -254,4 +297,4 @@ The legend component can be customized by overriding the following CSS classes:
 We welcome contributions! If you have suggestions, bug reports, or want to add new features, please open an issue or submit a pull request.
 
 ## Acknowledgements
-This project was developed with the financial support of **Universidade Federal de Santa Maria (UFSM)**, in partnership with **INEP**, through a scholarship from the university. I would like to thank both institutions for their assistance and funding.
+This project was developed with the financial support of **INEP**, in partnership with **Universidade Federal de Santa Maria (UFSM)**, through a scholarship from the university. I would like to thank both institutions for their assistance and funding.
