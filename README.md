@@ -293,6 +293,11 @@ The legend component can be customized by overriding the following CSS classes:
 
 - **`.react-topojson-heatmap__legend .legend-color`**: Styles the color indicators in the legend, setting their size, shape, and spacing.
 
+### RegionLabel
+The legend component can be customized by overriding the following CSS classes:
+
+- **`.react-topojson-heatmap__region-label`**: Defines the overall appearance of the label.
+
 ## Contributing
 We welcome contributions! If you have suggestions, bug reports, or want to add new features, please open an issue or submit a pull request.
 
