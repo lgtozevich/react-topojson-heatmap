@@ -3,20 +3,20 @@ import "./Legend.css";
 
 export type LegendProps = {
   children?: React.ReactNode | string;
-  domain?: [number, number];
+  domain?: number[];
   stepSize?: number;
   colorScale?: (value: number) => string;
   formatter?: (value: number) => string;
 };
 
 function Legend({
-  domain,
+  domain = [0, 0],
   children = "Legend",
   stepSize = 5,
   colorScale,
   formatter,
 }: LegendProps): JSX.Element {
-  const [minValue, maxValue] = domain!;
+  const [minValue, maxValue] = [domain[0], domain[domain.length - 1]];
   const numSteps = Math.floor((maxValue - minValue) / stepSize) + 1;
   const legendValues = Array.from(
     { length: numSteps },

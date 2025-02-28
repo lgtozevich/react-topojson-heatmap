@@ -43,8 +43,8 @@ interface TopoHeatmapProps {
   idPath?: string;
   metadata?: Metadata;
   children?: React.ReactNode[] | React.ReactNode;
-  colorRange?: [string, string];
-  domain?: [number, number];
+  colorRange?: string[];
+  domain?: number[];
   scale?: number;
   translate?: [number, number];
   fitSize?: boolean;
