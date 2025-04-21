@@ -5,6 +5,7 @@ export type LegendProps = {
   children?: React.ReactNode | string;
   domain?: number[];
   stepSize?: number;
+  scaleType?: "continuous" | "discrete";
   colorScale?: (value: number) => string;
   formatter?: (value: number) => string;
 };
@@ -13,6 +14,7 @@ function Legend({
   domain = [0, 0],
   children = "Legend",
   stepSize = 5,
+  scaleType = "discrete",
   colorScale,
   formatter,
 }: LegendProps): JSX.Element {
@@ -22,30 +24,68 @@ function Legend({
     { length: numSteps },
     (_, i) => minValue + i * stepSize
   );
+
+  const gradientStyle = () => {
+    if (scaleType === "continuous") {
+      console.log({
+        background: `linear-gradient(to bottom, ${domain
+          .map((value) => colorScale!(value))
+          .join(", ")})`,
+      });
+      return {
+        background: `linear-gradient(to bottom, ${domain
+          .map((value) => colorScale!(value))
+          .join(", ")})`,
+      };
+    }
+    return {};
+  };
   return (
     <div className={`react-topojson-heatmap__legend`}>
       <div className="content-wrapper">
         <div className="legend-header">{children}</div>
-        <div className="legend-body">
-          {legendValues.map((value, i) => (
-            <div key={i} className="legend-item">
-              <div
-                className="legend-color"
-                style={{
-                  backgroundColor: colorScale!(value),
-                }}
-              ></div>
-              <span>
-                {formatter
-                  ? formatter(value)
-                  : value.toLocaleString(undefined, {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 2,
-                    })}
-              </span>
+        {scaleType === "discrete" && (
+          <div className="legend-body">
+            {legendValues.map((value, i) => (
+              <div key={i} className="legend-item">
+                <div
+                  className="legend-color"
+                  style={{
+                    backgroundColor: colorScale!(value),
+                  }}
+                />
+                <span>
+                  {formatter
+                    ? formatter(value)
+                    : value.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        {scaleType === "continuous" && (
+          <div
+            className="d-flex legend-body flex-row"
+            style={{ height: "100px" }}
+          >
+            <div className="legend-gradient" style={gradientStyle()} />
+            <div className="legend-gradient-labels">
+              {legendValues.map((value, i) => (
+                <span key={i} className="legend-gradient-label">
+                  {formatter
+                    ? formatter(value)
+                    : value.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

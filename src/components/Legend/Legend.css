@@ -54,3 +54,18 @@
   border-radius: 2px;
   margin-right: 5px;
 }
+
+.react-topojson-heatmap__legend .legend-gradient {
+  width: 15px;
+  height: 100%;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+.react-topojson-heatmap__legend .legend-gradient-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  font-size: 13px;
+}

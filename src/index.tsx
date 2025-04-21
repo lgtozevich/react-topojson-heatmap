@@ -174,6 +174,7 @@ function TopoHeatmap({
         <Legend
           domain={legendProps.domain || domain || [0, maxValue]}
           colorScale={legendProps.colorScale || colorScale}
+          scaleType={legendProps.scaleType}
           stepSize={legendProps.stepSize}
           formatter={legendProps.formatter}
         >
