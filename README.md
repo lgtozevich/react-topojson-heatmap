@@ -176,9 +176,10 @@ Used to display the heatmap color scale legend.
 
 | Prop       | Type                        | Description                               | Default Value                          |
 | ---------- | --------------------------- | ----------------------------------------- | -------------------------------------- |
-| children   | `React.ReactNode, string`   | Content to be displayed in the legend header. | `"Legend"` |
-| stepSize   | `number`                    | The interval between steps in the legend. | `5`                                    |
-| formatter  | `(value: number) => string` | Function to format the legend labels.     | `undefined`                            |
+| children   | `React.ReactNode, string`   | Content to be displayed in the legend header. | `"Legend"`                         |
+| stepSize   | `number`                    | The interval between steps in the legend.     | `5`                                |
+| scaleType  | `"continuous", "discrete"` | Whether the legend color scale is continuous or discrete | `discrete`               |
+| formatter  | `(value: number) => string` | Function to format the legend labels.         | `undefined`                        |
 
 Example Usage (using bootstrap):
 ```javascript
