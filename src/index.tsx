@@ -239,6 +239,14 @@ function TopoHeatmap({
                       y={y}
                       width={width}
                       height={height}
+                      /* Handle label superposition */
+                      onMouseEnter={(e) => {
+                        const node = e.currentTarget;
+                        const parent = node.parentNode;
+                        if (parent) {
+                          parent.appendChild(node);
+                        }
+                      }}
                     >
                       {getRegionLabelContent(getProperty(geo, idPath))}
                     </foreignObject>
