@@ -26,16 +26,20 @@ function Legend({
   );
 
   const gradientStyle = () => {
-    if (scaleType === "continuous") {
-      console.log({
-        background: `linear-gradient(to bottom, ${domain
-          .map((value) => colorScale!(value))
-          .join(", ")})`,
+    if (domain.length === 1) return { background: colorScale!(domain[0]) };
+
+    if (scaleType === "continuous" && domain.length > 1) {
+      const min = domain[0];
+      const max = domain[domain.length - 1];
+      const range = max - min;
+
+      const colorStops = domain.map((value) => {
+        const percent = ((value - min) / range) * 100;
+        return `${colorScale!(value)} ${percent}%`;
       });
+
       return {
-        background: `linear-gradient(to bottom, ${domain
-          .map((value) => colorScale!(value))
-          .join(", ")})`,
+        background: `linear-gradient(to top, ${colorStops.join(", ")})`,
       };
     }
     return {};
@@ -44,8 +48,10 @@ function Legend({
     <div className={`react-topojson-heatmap__legend`}>
       <div className="content-wrapper">
         <div className="legend-header">{children}</div>
+
+        {/* Handles discrete kind of legend */}
         {scaleType === "discrete" && (
-          <div className="legend-body">
+          <div className="discrete-legend">
             {legendValues.map((value, i) => (
               <div key={i} className="legend-item">
                 <div
@@ -66,23 +72,36 @@ function Legend({
             ))}
           </div>
         )}
+
+        {/* Handles continuous kind of legend */}
         {scaleType === "continuous" && (
-          <div
-            className="d-flex legend-body flex-row"
-            style={{ height: "100px" }}
-          >
-            <div className="legend-gradient" style={gradientStyle()} />
+          <div className="continuous-legend">
             <div className="legend-gradient-labels">
-              {legendValues.map((value, i) => (
-                <span key={i} className="legend-gradient-label">
-                  {formatter
-                    ? formatter(value)
-                    : value.toLocaleString(undefined, {
+              <span className="legend-gradient-label">
+                {formatter
+                  ? formatter(legendValues[legendValues.length - 1])
+                  : legendValues[legendValues.length - 1].toLocaleString(
+                      undefined,
+                      {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 2,
-                      })}
-                </span>
-              ))}
+                      }
+                    )}
+              </span>
+            </div>
+
+            {/* Gradient bar */}
+            <div className="legend-gradient" style={gradientStyle()} />
+
+            <div className="legend-gradient-labels">
+              <span className="legend-gradient-label">
+                {formatter
+                  ? formatter(legendValues[0])
+                  : legendValues[0].toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    })}
+              </span>
             </div>
           </div>
         )}

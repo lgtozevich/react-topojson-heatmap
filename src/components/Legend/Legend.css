@@ -35,7 +35,7 @@
   line-height: 1.1;
 }
 
-.react-topojson-heatmap__legend .legend-body {
+.react-topojson-heatmap__legend .discrete-legend {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -55,17 +55,26 @@
   margin-right: 5px;
 }
 
+.react-topojson-heatmap__legend .continuous-legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.2;
+  gap: 5px;
+  height: 100px;
+}
+
 .react-topojson-heatmap__legend .legend-gradient {
   width: 15px;
   height: 100%;
   border-radius: 2px;
-  margin-right: 5px;
 }
 
 .react-topojson-heatmap__legend .legend-gradient-labels {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
   font-size: 13px;
 }
