@@ -176,10 +176,13 @@ Used to display the heatmap color scale legend.
 
 | Prop       | Type                        | Description                               | Default Value                          |
 | ---------- | --------------------------- | ----------------------------------------- | -------------------------------------- |
-| children   | `React.ReactNode, string`   | Content to be displayed in the legend header. | `"Legend"`                         |
-| stepSize   | `number`                    | The interval between steps in the legend.     | `5`                                |
-| scaleType  | `"continuous", "discrete"` | Whether the legend color scale is continuous or discrete | `discrete`               |
-| formatter  | `(value: number) => string` | Function to format the legend labels.         | `undefined`                        |
+| children?   | `React.ReactNode, string`   | Content to be displayed in the legend header.                   | `"Legend"`      |
+| scaleType?  | `"continuous", "discrete"`  | Whether the legend color scale is continuous or discrete.        | `discrete`     |
+| stepSize?   | `number`                    | The interval between steps in the **discrete** legend.          | `5`             |
+| formatter?  | `(value: number) => string` | Function to format the legend labels.                           | `undefined`     |
+| maxValueLabel? | `string`                 | Label to display above the maximum value in a **continuous** legend.| `""`        |
+| minValueLabel? | `string`                 | Label to display below the minimum value in a **continuous** legend.| `""`        |
+| height?        | `number`                 | Height of the gradient bar in a **continuous** legend.              | `100px`     |
 
 Example Usage (using bootstrap):
 ```javascript
@@ -288,11 +291,22 @@ The legend component can be customized by overriding the following CSS classes:
 
 - **`.react-topojson-heatmap__legend .legend-header`**: Styles the header of the legend.
 
-- **`.react-topojson-heatmap__legend .legend-body`**: Manages the layout of the legend's body, using flexbox to center content and defining font size and line height.
+- **`.react-topojson-heatmap__legend .discrete-legend`**: Manages the layout of the **discrete** legend's body, using flexbox to center content and defining font size and line height.
 
-- **`.react-topojson-heatmap__legend .legend-item`**: Defines the layout of individual items within the legend.
+- **`.react-topojson-heatmap__legend .discrete-legend__item`**: Defines the layout of individual items within the **discrete** legend.
 
-- **`.react-topojson-heatmap__legend .legend-color`**: Styles the color indicators in the legend, setting their size, shape, and spacing.
+- **`.react-topojson-heatmap__legend .discrete-legend__colorbox`**: Styles the color indicators in the **discrete** legend, setting their size, shape, and spacing.
+
+- **`.react-topojson-heatmap__legend .continuous-legend`**: Manages the layout of the **continuous** legend's body, using flexbox to center content or gradient bar.
+  
+- **`.react-topojson-heatmap__legend .continuous-legend_gradientbar`**: Defines the width and visual appearance of the gradient bar in a **continuous** legend.
+
+- **`.react-topojson-heatmap__legend .continuous-legend__labels .label-title`**: Styles the optional label titles (e.g., "High", "Low") displayed above or below the legend values.
+
+- **`.react-topojson-heatmap__legend .continuous-legend__labels .label-value`**: Styles the numeric values shown at the top and bottom of the **continuous** legend, representing the data range.
+
+
+
 
 ### RegionLabel
 The legend component can be customized by overriding the following CSS classes:

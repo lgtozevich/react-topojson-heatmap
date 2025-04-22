@@ -176,6 +176,9 @@ function TopoHeatmap({
           colorScale={legendProps.colorScale || colorScale}
           scaleType={legendProps.scaleType}
           stepSize={legendProps.stepSize}
+          minValueLabel={legendProps.minValueLabel}
+          maxValueLabel={legendProps.maxValueLabel}
+          height={legendProps.height}
           formatter={legendProps.formatter}
         >
           {legendProps.children}

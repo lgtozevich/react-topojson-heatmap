@@ -43,12 +43,12 @@
   line-height: 1.2;
 }
 
-.react-topojson-heatmap__legend .legend-item {
+.react-topojson-heatmap__legend .discrete-legend__item {
   display: flex;
   align-items: center;
 }
 
-.react-topojson-heatmap__legend .legend-color {
+.react-topojson-heatmap__legend .discrete-legend__colorbox {
   width: 10px;
   height: 10px;
   border-radius: 2px;
@@ -66,15 +66,15 @@
   height: 100px;
 }
 
-.react-topojson-heatmap__legend .legend-gradient {
+.react-topojson-heatmap__legend .continuous-legend__labels {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+}
+
+.react-topojson-heatmap__legend .continuous-legend_gradientbar {
   width: 15px;
   height: 100%;
   border-radius: 2px;
-}
-
-.react-topojson-heatmap__legend .legend-gradient-labels {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 13px;
 }

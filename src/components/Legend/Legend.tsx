@@ -6,15 +6,21 @@ export type LegendProps = {
   domain?: number[];
   stepSize?: number;
   scaleType?: "continuous" | "discrete";
+  maxValueLabel?: string;
+  minValueLabel?: string;
+  height?: number;
   colorScale?: (value: number) => string;
   formatter?: (value: number) => string;
 };
 
 function Legend({
   domain = [0, 0],
-  children = "Legend",
+  children = "",
   stepSize = 5,
   scaleType = "discrete",
+  maxValueLabel = "",
+  minValueLabel = "",
+  height = undefined,
   colorScale,
   formatter,
 }: LegendProps): JSX.Element {
@@ -47,15 +53,16 @@ function Legend({
   return (
     <div className={`react-topojson-heatmap__legend`}>
       <div className="content-wrapper">
+        {/* Header */}
         <div className="legend-header">{children}</div>
 
         {/* Handles discrete kind of legend */}
         {scaleType === "discrete" && (
           <div className="discrete-legend">
             {legendValues.map((value, i) => (
-              <div key={i} className="legend-item">
+              <div key={i} className="discrete-legend__item">
                 <div
-                  className="legend-color"
+                  className="discrete-legend__colorbox"
                   style={{
                     backgroundColor: colorScale!(value),
                   }}
@@ -75,9 +82,17 @@ function Legend({
 
         {/* Handles continuous kind of legend */}
         {scaleType === "continuous" && (
-          <div className="continuous-legend">
-            <div className="legend-gradient-labels">
-              <span className="legend-gradient-label">
+          <div
+            className="continuous-legend"
+            style={{
+              height: height,
+            }}
+          >
+            <div className="continuous-legend__labels">
+              {maxValueLabel && (
+                <span className="label-title">{maxValueLabel}</span>
+              )}
+              <span className="label-value">
                 {formatter
                   ? formatter(legendValues[legendValues.length - 1])
                   : legendValues[legendValues.length - 1].toLocaleString(
@@ -91,10 +106,16 @@ function Legend({
             </div>
 
             {/* Gradient bar */}
-            <div className="legend-gradient" style={gradientStyle()} />
+            <div
+              className="continuous-legend_gradientbar"
+              style={gradientStyle()}
+            />
 
-            <div className="legend-gradient-labels">
-              <span className="legend-gradient-label">
+            <div className="continuous-legend__labels">
+              {minValueLabel && (
+                <span className="label-title">{minValueLabel}</span>
+              )}
+              <span className="label-value">
                 {formatter
                   ? formatter(legendValues[0])
                   : legendValues[0].toLocaleString(undefined, {
