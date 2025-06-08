@@ -15,8 +15,8 @@ import { feature } from "topojson-client";
 import { Topology } from "topojson-specification";
 import type {
   Geography as GeographyType,
-  Metadata,
-  MetaItem,
+  Data,
+  DataItem,
   TopoObj,
 } from "./types";
 
@@ -28,7 +28,6 @@ import {
 import {
   validateGeometriesHaveId,
   validateDataKeys,
-  validateMetadataKeys,
 } from "./utils/errorHandling";
 import { centerRect } from "./utils/mathUtils";
 
@@ -38,10 +37,10 @@ import "./index.css";
 import "react-tooltip/dist/react-tooltip.css";
 
 interface TopoHeatmapProps {
-  data: Record<string, number>;
+  data: Data;
   topojson: Topology<TopoObj>;
+  valueKey: string;
   idPath?: string;
-  metadata?: Metadata;
   children?: React.ReactNode[] | React.ReactNode;
   colorRange?: string[];
   domain?: number[];
@@ -55,7 +54,7 @@ interface TopoHeatmapProps {
 function TopoHeatmap({
   children = [],
   data,
-  metadata,
+  valueKey,
   topojson,
   idPath = "id",
   domain,
@@ -74,7 +73,16 @@ function TopoHeatmap({
   const [selectedGeos, setSelectedGeos] = useState<GeographyType[]>([]);
 
   const componentId = useId().replace(/:/g, "");
-  const maxValue = Math.max(...Object.values(data));
+
+  // Extract values using valueKey
+  const extractValue = (item: DataItem): number => {
+    if (!item || !valueKey || typeof item[valueKey] === "undefined") return 0;
+    const value = item[valueKey];
+    return typeof value === "number" ? value : 0;
+  };
+
+  const dataValues = Object.keys(data).map((key) => extractValue(data[key]));
+  const maxValue = Math.max(...dataValues);
   const colorScale = scaleLinear<string>()
     .domain(domain || [0, maxValue])
     .range(colorRange);
@@ -82,9 +90,8 @@ function TopoHeatmap({
   // Data format error handling
   useEffect(() => {
     validateGeometriesHaveId(topojson, idPath);
-    validateDataKeys(topojson, data, idPath);
-    if (metadata) validateMetadataKeys(data, metadata);
-  }, [topojson]);
+    validateDataKeys(topojson, data, idPath, valueKey);
+  }, [topojson, data, idPath, valueKey]);
 
   useEffect(() => {
     const geojson = feature(topojson, getObjectFirstProperty(topojson.objects));
@@ -111,14 +118,14 @@ function TopoHeatmap({
   );
 
   const getTooltipContent = (geoId: string | number): React.ReactNode => {
-    if (tooltipProps && metadata && tooltipProps.tooltipContent) {
+    if (tooltipProps && data[geoId] && tooltipProps.tooltipContent) {
       return (
         <div
           className={`react-topojson-heatmap__tooltip ${
             tooltipProps.position || "top"
           }`}
         >
-          {tooltipProps.tooltipContent(metadata[geoId])}
+          {tooltipProps.tooltipContent(data[geoId])}
         </div>
       );
     } else {
@@ -141,10 +148,14 @@ function TopoHeatmap({
   };
 
   const getRegionLabelContent = (geoId: string | number): React.ReactNode => {
-    if (regionLabelProps && metadata && regionLabelProps?.regionLabelContent) {
+    if (
+      regionLabelProps &&
+      data[geoId] &&
+      regionLabelProps?.regionLabelContent
+    ) {
       return (
         <div className={`react-topojson-heatmap__region-label`}>
-          {regionLabelProps.regionLabelContent(metadata[geoId])}
+          {regionLabelProps.regionLabelContent(data[geoId])}
         </div>
       );
     } else {
@@ -196,23 +207,25 @@ function TopoHeatmap({
                * Handle region printing
                */}
               {geographies.map((geo) => {
-                const stateValue = data[getProperty(geo, idPath)] || 0;
+                const geoId = getProperty(geo, idPath);
+                const geoData = data[geoId] || {};
+                const stateValue = extractValue(geoData);
                 return (
                   <Geography
-                    key={`${componentId}_${getProperty(geo, idPath)}`}
+                    key={`${componentId}_${geoId}`}
                     className={`react-topojson-heatmap__state ${
                       selectedGeos.includes(geo) ? "selected" : ""
                     }`}
                     geography={geo}
                     fill={colorScale(stateValue)}
-                    id={`geo-${componentId}-${getProperty(geo, idPath)}`}
+                    id={`geo-${componentId}-${geoId}`}
                     data-tooltip-id={`tooltip-${componentId}`}
                     data-tooltip-html={ReactDOMServer.renderToStaticMarkup(
-                      getTooltipContent(getProperty(geo, idPath))
+                      getTooltipContent(geoId)
                     )}
                     data-region-label-id={`region-label-${componentId}`}
                     data-region-label-html={ReactDOMServer.renderToStaticMarkup(
-                      getRegionLabelContent(getProperty(geo, idPath))
+                      getRegionLabelContent(geoId)
                     )}
                     onClick={() => {
                       if (onClick) onClick(geo);
@@ -276,5 +289,5 @@ function TopoHeatmap({
 }
 
 export default TopoHeatmap;
-export type { GeographyType, Metadata, MetaItem, Topology };
+export type { GeographyType, Data, DataItem, Topology };
 export { Legend, Tooltip, RegionLabel } from "./components";
