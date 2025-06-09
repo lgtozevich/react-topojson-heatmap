@@ -1,12 +1,12 @@
 import React from "react";
 
-import type { MetaItem } from "src/types";
+import type { DataItem } from "src/types";
 import "./RegionLabel.css";
 
 export type RegionLabelProps = {
   width?: number;
   height?: number;
-  regionLabelContent?: (meta: MetaItem) => React.ReactNode;
+  regionLabelContent?: (meta: DataItem) => React.ReactNode;
 };
 
 function RegionLabel({}: RegionLabelProps): null {

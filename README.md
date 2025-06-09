@@ -33,25 +33,26 @@ Here's a basic example of the data format used in the component:
 
 ```javascript
 const data = {
-  "SP": 50,
-  "RJ": 30,
-  "MG": 20,
-  // Add more states with corresponding values
-};
-
-const metadata = {
   "SP": {
-    "name": "São Paulo"
-    "population": 50.000,
-    "area": 50.000,
+    "name": "São Paulo",
+    "population": 50000,
+    "area": 50000,
+    "indicator": 50,
   },
   "RJ": {
-    "name": "Rio de Janeiro"
-    "population": 40.000,
-    "area": 32.000,
+    "name": "Rio de Janeiro",
+    "population": 40000,
+    "area": 32000,
+    "indicator": 30,
+  },
+  "MG": {
+    "name": "Minas Gerais",
+    "population": 30000,
+    "area": 45000,
+    "indicator": 20,
   },
   // Add more states with corresponding data
-}
+};
 ```
 
 ## Example: Using the IBGE Malhas API
@@ -70,6 +71,7 @@ The **IBGE Malhas API** can be used as an example source for TopoJSON data with 
 ```javascript
 <TopoHeatmap
   data={data}
+  valueKey="indicator"
   topojson={topojson}
   idPath="properties.codarea"
   colorRange={["#90caff", "#2998ff"]}
@@ -88,18 +90,17 @@ The `react-topojson-heatmap` component accepts the following props:
 
 | Prop          | Type                                   | Description                                                                                     | Default                                                       |
 | ------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `data`        | `Record<string, number>`               | An object containing the values for each state. The key should correspond to the state's code.  | NA                                                            |
-| `metadata?`   | `Metadata`                             | An object specifying metadata for each state, such as names or descriptions.                    | `undefined`                                                   |
+| `data`        | `Data`                                 | An object containing data for each region. Each region should have a property specified by `valueKey` that will be used for coloring the heatmap. | NA |
+| `valueKey`   | `string`                               | The key inside each data item to be used as the value for coloring the heatmap.                  | `undefined`                                          |
 | `topojson`    | `Topology<TopoObj>`                    | The TopoJSON data used for rendering the geographical regions.                                  | NA                                                            |
 | `idPath?`     | `string`                               | The key used to identify each region in the TopoJSON data.                                      | `"id"`                                                        |
-| `colorRange?` | `string[]`                     | An array of colors that define the color range for the heatmap.                             | `["#90caff", "#2998ff"]`                                      |
-| `domain?`     | `number[]`                     | An array containing the color interpolation steps for the color range.                          | `[0, maxValue]`, where `maxValue` is the max value in `data`. |
+| `colorRange?` | `string[]`                             | An array of colors that define the color range for the heatmap.                                 | `["#90caff", "#2998ff"]`                                      |
+| `domain?`     | `number[]`                             | An array containing the color interpolation steps for the color range.                          | `[0, maxValue]`, where `maxValue` is the max value extracted from `data`. |
 | `scale?`      | `number`                               | A scale factor to manually adjust the size of the rendered map.                                 | `1`                                                           |
 | `translate?`  | `[number, number]`                     | An array defining the x and y translation to position the map.                                  | `[0, 0]`                                                      |
 | `fitSize?`    | `boolean`                              | Whether to fit the size of the map to the container's dimensions.                               | `true`                                                        |
 | `onClick?`    | `(geo: GeographyType) => void`         | A callback function called when a region is clicked, receiving information about the geography. | `() => {}`                                                    |
 | `onSelect?`   | `(geos: GeographyType[]) => void`      | A callback function called when a region is clicked that enables multiple selection, receiving information about all the currently selected regions. | `undefined`     |
-
 
 Basic example usage:
 
@@ -111,7 +112,11 @@ function App() {
   return (
     <div className="App">
       <h1>TopoJSON Heatmap</h1>
-      <TopoHeatmap data={data} metadata={metadata} topojson={topojson}/>
+      <TopoHeatmap 
+        data={data} 
+        valueKey="indicator" 
+        topojson={topojson}
+      />
     </div>
   );
 }
@@ -131,16 +136,16 @@ Used to display a tooltip with relevant information about each state.
 | trigger?       | `"hover", "click"`                    | Determines how the tooltip is triggered ( on hover or click).                                                | `"hover"`                        |
 | float?          | `boolean`                             | If true, tooltip will follow the mouse position when it moves inside the anchor element.                     | `false`                          |
 | position?       | `"top", "right", "bottom", "left"`    | Specifies the position of the tooltip relative to the target.                                                | `"top"`                           |
-| tooltipContent? | `(meta: MetaItem) => React.ReactNode` | A function that returns the content of the tooltip based on metadata. Used to customize the tooltip content. | Returns a div with the region id. |
+| tooltipContent? | `(meta: DataItem) => React.ReactNode` | A function that returns the content of the tooltip based on region data. Used to customize the tooltip content. | Returns a div with the region id. |
 
 
 Example Usage (using bootstrap):
 ```javascript
 import React from 'react';
-import TopoHeatmap, { Tooltip, MetaItem } from 'react-topojson-heatmap';
+import TopoHeatmap, { Tooltip, DataItem } from 'react-topojson-heatmap';
 
 function App() {
-  const tooltipContent = (meta: MetaItem): React.ReactNode => {
+  const tooltipContent = (meta: DataItem): React.ReactNode => {
     return (
       <div className="d-flex container-fluid flex-column">
         <h3 className="fw-bold text-center text-white">{meta.name}</h3>
@@ -157,7 +162,11 @@ function App() {
   };
   return (
     <div className="App">
-      <TopoHeatmap data={data} metadata={metadata} topojson={topojson}>
+      <TopoHeatmap 
+        data={data} 
+        valueKey="indicator" 
+        topojson={topojson}
+      >
         <Tooltip
           float
           trigger="hover"
@@ -192,7 +201,11 @@ import TopoHeatmap, { Legend } from 'react-topojson-heatmap';
 function App() {
   return (
     <div className="App">
-      <TopoHeatmap data={data} metadata={metadata} topojson={topojson}>
+      <TopoHeatmap 
+        data={data} 
+        valueKey="indicator" 
+        topojson={topojson}
+      >
         <Legend
           stepSize={10}
           formatter={value => {
@@ -219,15 +232,15 @@ Used to display a label inside a region, allowing customization of the content.
 | ------------------- | ------------------------------------- | ------------------------------------------------------------------- | ------- |
 | width?              | `number`                              | Defines the width of the label container.                                     | 75     |
 | height?             | `number`                              | Defines the height of the label container.                                    | 50     |
-| regionLabelContent? | `(meta: MetaItem) => React.ReactNode` | A function that returns the content of the label based on metadata. Used to customize the label content. | Returns a div with the region id. |
+| regionLabelContent? | `(meta: DataItem) => React.ReactNode` | A function that returns the content of the label based on region data. Used to customize the label content. | Returns a div with the region id. |
 
 Example Usage:
 ```javascript
 import React from 'react';
-import TopoHeatmap, { RegionLabel, MetaItem } from 'react-topojson-heatmap';
+import TopoHeatmap, { RegionLabel, DataItem } from 'react-topojson-heatmap';
 
 function App() {
-  const labelContent = (meta: MetaItem): React.ReactNode => {
+  const labelContent = (meta: DataItem): React.ReactNode => {
     return (
        <div className="d-flex container-fluid flex-column">
         <h3 className="fw-bold text-center text-white">{meta.name}</h3>
@@ -241,7 +254,11 @@ function App() {
 
   return (
     <div className="App">
-      <TopoHeatmap data={data} metadata={metadata} topojson={topojson}>
+      <TopoHeatmap 
+        data={data} 
+        valueKey="indicator" 
+        topojson={topojson}
+      >
         <RegionLabel
           width={50}
           height={20}
@@ -304,9 +321,6 @@ The legend component can be customized by overriding the following CSS classes:
 - **`.react-topojson-heatmap__legend .continuous-legend__labels .label-title`**: Styles the optional label titles (e.g., "High", "Low") displayed above or below the legend values.
 
 - **`.react-topojson-heatmap__legend .continuous-legend__labels .label-value`**: Styles the numeric values shown at the top and bottom of the **continuous** legend, representing the data range.
-
-
-
 
 ### RegionLabel
 The legend component can be customized by overriding the following CSS classes:

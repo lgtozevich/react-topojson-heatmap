@@ -1,13 +1,13 @@
 import React from "react";
 
-import type { MetaItem } from "src/types";
+import type { DataItem } from "src/types";
 import "./Tooltip.css";
 
 export type TooltipProps = {
   trigger?: "hover" | "click";
   float?: boolean;
   position?: "top" | "right" | "bottom" | "left";
-  tooltipContent?: (meta: MetaItem) => React.ReactNode;
+  tooltipContent?: (meta: DataItem) => React.ReactNode;
 };
 
 function Tooltip({}: TooltipProps): null {

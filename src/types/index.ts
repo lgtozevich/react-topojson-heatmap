@@ -7,12 +7,12 @@ export type Geography = {
   arcs?: any[];
 };
 
-export type MetaItem = {
+export type DataItem = {
   [key: string]: string | number;
 };
 
-export type Metadata = {
-  [key: string]: MetaItem;
+export type Data = {
+  [key: string]: DataItem;
 };
 
 export type TopoObj = {
