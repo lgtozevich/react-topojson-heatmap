@@ -36,8 +36,8 @@ import { Tooltip as TT, Legend, RegionLabel } from "./components";
 import "./index.css";
 import "react-tooltip/dist/react-tooltip.css";
 
-interface TopoHeatmapProps {
-  data: Data;
+interface TopoHeatmapProps<T = Record<string, string | number>> {
+  data: Data<T>;
   topojson: Topology<TopoObj>;
   valueKey: string;
   idPath?: string;
@@ -51,7 +51,7 @@ interface TopoHeatmapProps {
   onSelect?: (geos: GeographyType[]) => void;
 }
 
-function TopoHeatmap({
+function TopoHeatmap<T = Record<string, string | number>>({
   children = [],
   data,
   valueKey,
@@ -64,7 +64,7 @@ function TopoHeatmap({
   fitSize = true,
   onClick,
   onSelect,
-}: TopoHeatmapProps): JSX.Element {
+}: TopoHeatmapProps<T>): JSX.Element {
   // SVG viewport dimensions.
   const width = 600;
   const height = 600;
@@ -75,7 +75,7 @@ function TopoHeatmap({
   const componentId = useId().replace(/:/g, "");
 
   // Extract values using valueKey
-  const extractValue = (item: DataItem): number => {
+  const extractValue = (item: DataItem<T>): number => {
     if (!item || !valueKey || typeof item[valueKey] === "undefined") return 0;
     const value = item[valueKey];
     return typeof value === "number" ? value : 0;
@@ -111,9 +111,9 @@ function TopoHeatmap({
     if (!onSelect) setSelectedGeos([]);
   }, [onSelect]);
 
-  const tooltipProps = TT.getTooltipProps(getChildByType(children, TT));
+  const tooltipProps = TT.getTooltipProps<T>(getChildByType(children, TT));
   const legendProps = Legend.getLegendProps(getChildByType(children, Legend));
-  const regionLabelProps = RegionLabel.getRegionLabelProps(
+  const regionLabelProps = RegionLabel.getRegionLabelProps<T>(
     getChildByType(children, RegionLabel)
   );
 
